@@ -46,6 +46,7 @@
 }
 
 .battle-ground .inner {
+  position: relative;
   width: 70%;
   height: 100%;
   margin: 10px;
@@ -77,15 +78,14 @@
 }
 
 .battle-ground .column-player {
-  position: relative;
   width: 50%;
   float: left;
 }
 .battle-ground .column-player img {
   position: absolute;
-  width: 40%;
+  width: 20%;
   left: 100px;
-  top: 166px;
+  bottom: 25px;
 }
 
 .battle-ground .column-dragon {

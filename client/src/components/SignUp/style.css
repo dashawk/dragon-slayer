@@ -1,23 +1,23 @@
-.login .login-box {
+.register .register-box {
   width: 20%;
   margin: 0 auto;
   background-size: cover;
 }
 
-.login .login-box .login-title {
+.register .register-box .register-title {
   text-align: center;
   margin: 30px 0;
   width: 100%;
 }
 
-.login .login-box input {
+.register .register-box input {
   display: block;
   width: 100%;
   padding: 5px;
   margin-bottom: 10px;
 }
 
-.login .login-box button {
+.register .register-box button {
   display: block;
   border: none;
   background-color: #EA2027;
@@ -28,22 +28,23 @@
   cursor: pointer;
   outline: none;
 }
-.login .login-box button[disabled] {
+.register .register-box button[disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+.register .register-box button:hover {
   opacity: 0.7;
 }
-.login .login-box button:hover {
-  opacity: 0.7;
-}
-.login .login-box button:active {
+.register .register-box button:active {
   opacity: 0.5;
 }
 
-.login .login-box label {
+.register .register-box label {
   display: block;
   width: 100%;
 }
 
-.login .error-container {
+.register .error-container {
   text-align: center;
   color: #EA2027;
   font-size: 12px;

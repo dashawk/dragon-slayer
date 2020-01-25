@@ -11,6 +11,7 @@ const initialState = {
   dragonWins: false,
   started: false,
   ended: false,
+  giveUp: false,
   reset: false,
   turns: []
 };
@@ -22,34 +23,48 @@ class Game extends PureComponent {
     this.state = {...initialState};
   }
 
-  Play = () => (
-    <div className="battle-ground">
-      <div className="inner">
-        <div className="column-player">
-          <h2>Player</h2>
-          <Health hp={ this.state.playerHealth } />
-          <img src={require('../../assets/player.png')} alt="Player Name" />
-        </div>
-        <div className="column-dragon">
-          <h2>Dragon</h2>
-          <Health hp={this.state.dragonHealth} />
-          <img src={require('../../assets/dragon.png')} alt="Player Name" />
-        </div>
-        
-        <div className="user-control">
-          <button onClick={this.attack}>Attack</button>
-          <button onClick={this.playerBlastAttack}>Blast Attack</button>
-          <button onClick={this.heal}>Heal</button>
-          <button onClick={this.reset}>Reset</button>
-        </div>
-      </div>
+  Play = () => {
+    const user = JSON.parse(localStorage.getItem('user'));
 
-      <div className="commentary-container">
-        <Commentary turns={this.state.turns} reset={this.state.reset} />
+    return (
+      <div className="battle-ground">
+        <div className="inner">
+          <div className="column-player">
+            <h2>{ user.firstName }</h2>
+            <Health hp={ this.state.playerHealth } />
+            <img src={require('../../assets/player.png')} alt={ user.firstName } />
+          </div>
+          <div className="column-dragon">
+            <h2>Dragon</h2>
+            <Health hp={this.state.dragonHealth} />
+            <img src={require('../../assets/dragon.png')} alt="Dragon" />
+          </div>
+
+          <div className="user-control">
+            <button onClick={this.attack}>Attack</button>
+            <button onClick={this.playerBlastAttack}>Blast Attack</button>
+            <button onClick={this.heal}>Heal</button>
+            <button onClick={this.giveUp}>Give Up</button>
+            <button onClick={this.reset}>Reset</button>
+          </div>
+        </div>
+
+        <div className="commentary-container">
+          <Commentary turns={this.state.turns} reset={this.state.reset} />
+        </div>
       </div>
-    </div>
-  );
-  PlayNow = () => <button className="centered" onClick={this.start}>Play Now</button>;
+    );
+  };
+  PlayNow = () => {
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    return (
+      <div>
+        <h4 className="centered">Welcome { user.firstName + ' ' + user.lastName }</h4>
+        <button className="centered" onClick={this.start}>Play Now</button>
+      </div>
+    );
+  };
 
   start = () => {
     this.setState({ started: true });
@@ -68,7 +83,7 @@ class Game extends PureComponent {
     let { playerHealth, turns } = this.state;
     let healPoints;
     if (this.state.playerHealth <= 85) {
-      healPoints = this.generateDamange(1, 15);
+      healPoints = this.generateDamage(1, 15);
       playerHealth += healPoints;
       turns.unshift('Player used heal and recovered ' + healPoints + ' health.');
     } else {
@@ -80,10 +95,17 @@ class Game extends PureComponent {
 
     this.dragonStartAttacking();
   };
+  giveUp = () => {
+    this.setState({
+      giveUp: true,
+      ended: true,
+      playerWins: false
+    });
+  };
 
   playerStartAttacking = () => {
     // Max damage of 10
-    let damage = this.generateDamange(1, 10);
+    let damage = this.generateDamage(1, 10);
 
     let { dragonHealth, turns } = this.state;
 
@@ -95,7 +117,7 @@ class Game extends PureComponent {
 
   playerBlastAttack = () => {
     // Max damage of 20
-    let damage = this.generateDamange(5, 20);
+    let damage = this.generateDamage(5, 20);
 
     let { dragonHealth, turns } = this.state;
 
@@ -110,10 +132,10 @@ class Game extends PureComponent {
 
   dragonStartAttacking = (min, max) => {
     // Max damage of 10
-    let damage = this.generateDamange(1, 10);
+    let damage = this.generateDamage(1, 10);
 
     if (typeof min !== 'undefined' || typeof max !== 'undefined') {
-      damage = this.generateDamange(min, max);
+      damage = this.generateDamage(min, max);
     }
 
     let { playerHealth, turns } = this.state;
@@ -165,7 +187,7 @@ class Game extends PureComponent {
     return false;
   };
 
-  generateDamange(minDamage, maxDamage) {
+  generateDamage(minDamage, maxDamage) {
     return Math.floor(Math.random() * maxDamage ) + minDamage;
   }
 
@@ -174,7 +196,12 @@ class Game extends PureComponent {
       <div className="game-container">
 
         { this.state.started ? this.Play() : this.PlayNow() }
-        { this.state.ended ? <WinStatus won={this.state.playerWins} playAgain={this.reset} /> : '' }
+        { this.state.ended ?
+          <WinStatus
+            won={this.state.playerWins}
+            giveUp={this.state.giveUp}
+            playAgain={this.reset} /> : ''
+        }
       </div>
     );
   }

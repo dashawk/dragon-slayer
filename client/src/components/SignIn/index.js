@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
 import './style.css';
+import {HOME} from "../../constants/routes";
 
 const initialState = {
   email: '',
@@ -16,20 +18,50 @@ class SignIn extends Component {
 
   onChange = e => {
     this.setState({ [e.target.name]: e.target.value });
+  };
+
+  postLogin(email, password) {
+    fetch('http://localhost:8000/api/login', {
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      body: JSON.stringify({ email, password }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => response.json())
+      .then(response => {
+        const data = response.data;
+
+        if (data.error) {
+          this.setState({ error: { message: 'Invalid email or password' } });
+        } else {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+
+          this.props.history.push(HOME);
+        }
+
+      });
   }
   onSubmit = e => {
     e.preventDefault();
 
     const { email, password } = this.state;
 
-    localStorage.setItem('token', 'test_token_or_any');
-
-    this.props.history.push('/');
-  }
+    this.postLogin(email, password);
+  };
 
   render() {
     const { email, password, error } = this.state;
     const isInvalid = password === '' || email === '';
+    const token = localStorage.getItem('token');
+    const isLoggedIn = token !== null;
+
+    if (isLoggedIn) {
+      return <Redirect to={HOME} />
+    }
 
     return (
       <div className="login container">
@@ -41,6 +73,7 @@ class SignIn extends Component {
               type="text"
               name="email"
               value={email}
+              autoComplete="off"
               onChange={this.onChange}
               placeholder="Email Address" />
 
@@ -52,13 +85,14 @@ class SignIn extends Component {
               onChange={this.onChange}
               placeholder="Password" />
 
+            { error ? <div className="error-container">{ error.message }</div> : '' }
+
             <button disabled={isInvalid} type="submit">Login</button>
-            { error && <div className="error-container">{ error.message }</div> }
           </form>
         </div>
       </div>
     );
   }
-};
+}
 
 export default SignIn;

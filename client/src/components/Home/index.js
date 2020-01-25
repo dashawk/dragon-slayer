@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { Redirect } from 'react-router-dom';
 import { LOGIN, REGISTER } from '../../constants/routes';
 import Game from '../Game';
 
@@ -7,6 +6,8 @@ import Game from '../Game';
 class Home extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {};
   }
 
   login = () => {
